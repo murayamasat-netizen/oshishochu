@@ -1,205 +1,175 @@
 /* =========================================
-   推し焼酎診断 - POP / EVENT THEME + 推し活背景
-   ファイル名: style-pop.css
+   推し焼酎診断 - POP / EVENT THEME
+   確実表示版（GitHub Pages対応）
    背景画像: images/bg-oshikatsu.png
    ========================================= */
 
-/* まずは既存のベース崩れを防ぐ */
-* { box-sizing: border-box; }
-html, body { height: 100%; }
+* {
+  box-sizing: border-box;
+}
 
-body{
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== 全体背景（ここが重要） ===== */
+body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
   max-width: 980px;
   margin: 0 auto;
   padding: 20px;
   line-height: 1.6;
-  position: relative;
 
-  /* 背景は画像の上に“ほんのり”色を足す */
+  /* ★ 推し活イラスト＋ポップな光背景を直指定 */
   background:
+    url("images/bg-oshikatsu.png") repeat center / 520px auto,
     radial-gradient(circle at 12% 12%, rgba(255,203,112,.28), transparent 46%),
     radial-gradient(circle at 88% 18%, rgba(152,225,255,.28), transparent 46%),
     radial-gradient(circle at 30% 88%, rgba(196,255,169,.24), transparent 50%),
-    #fff;
+    #ffffff;
 }
 
-/* 推し活イラスト背景（全面・薄く・固定） */
-body::after{
-  content:"";
-  position: fixed;
-  inset: 0;
-
-  /* ★ここが背景画像 */
-  background-image: url("images/bg-oshikatsu.png");
-  background-repeat: repeat;
-  background-size: 520px auto;     /* うちわ等の大きさ */
-  background-position: center;
-
-  opacity: 0.14;                   /* 薄さ（0.10〜0.18で調整） */
-  filter: saturate(1.05) blur(0px);
-  pointer-events: none;
-  z-index: -2;
+/* ===== 見出し ===== */
+h1, h2, h3 {
+  text-align: center;
 }
 
-/* キラっとした粒を上に重ねてイベント感UP（任意だがおすすめ） */
-body::before{
-  content:"";
-  position: fixed;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 18% 30%, rgba(255,255,255,.50), transparent 42%),
-    radial-gradient(circle at 78% 22%, rgba(255,255,255,.45), transparent 46%),
-    radial-gradient(circle at 55% 82%, rgba(255,255,255,.42), transparent 44%);
-  opacity: .55;
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* 見出し */
-h1, h2, h3 { text-align: center; }
-h1{
+h1 {
   font-size: 30px;
   letter-spacing: .02em;
   margin: 8px 0 18px;
 }
-h2{ font-size: 20px; margin: 14px 0; }
-h3{ font-size: 18px; margin: 8px 0; }
 
-/* 汎用 */
-.hidden{ display: none; }
-.center{ text-align: center; }
-#resultText{ white-space: pre-wrap; }
+h2 {
+  font-size: 20px;
+  margin: 14px 0;
+}
 
-/* カード（質問/結果/属性入力） */
-.setup-box, .question-box, .result-box{
-  border: none;
+h3 {
+  font-size: 18px;
+  margin: 8px 0;
+}
+
+/* ===== 汎用 ===== */
+.hidden {
+  display: none;
+}
+
+.center {
+  text-align: center;
+}
+
+#resultText {
+  white-space: pre-wrap;
+}
+
+/* ===== カードUI ===== */
+.setup-box,
+.question-box,
+.result-box {
+  background: rgba(255, 255, 255, 0.92);
   border-radius: 18px;
-  background: rgba(255,255,255,.92);
   box-shadow: 0 14px 40px rgba(0,0,0,.10);
-  position: relative;
-  overflow: hidden;
+  padding: 16px;
+  margin-top: 20px;
 }
 
-/* カードに淡い帯を敷いてポップに */
-.setup-box::before, .question-box::before, .result-box::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: linear-gradient(90deg,
-    rgba(255,203,112,.20),
-    rgba(152,225,255,.16),
-    rgba(196,255,169,.14),
-    rgba(255,170,215,.12)
-  );
-  pointer-events:none;
-}
-
-/* フォーム */
-.form-row{
+/* ===== フォーム ===== */
+.form-row {
   display: grid;
   grid-template-columns: 140px 1fr;
   gap: 12px;
   align-items: center;
   margin: 10px 0;
 }
-label{ font-weight: 800; }
 
-select, input{
+label {
+  font-weight: 800;
+}
+
+select, input {
   font-size: 16px;
   padding: 10px 12px;
   border: 2px solid rgba(0,0,0,.10);
   border-radius: 14px;
   background: #fff;
-  box-shadow: 0 10px 22px rgba(0,0,0,.06);
-  outline: none;
-}
-select:focus, input:focus{
-  border-color: rgba(0,0,0,.28);
 }
 
-/* ボタン共通（ぷっくり） */
-button{
+/* ===== ボタン共通 ===== */
+button {
   margin: 6px;
-  border: 0;
+  border: none;
   border-radius: 16px;
   padding: 12px 18px;
   font-size: 16px;
   font-weight: 900;
-  letter-spacing: .02em;
   cursor: pointer;
 
   background: #111;
   color: #fff;
   box-shadow: 0 10px 22px rgba(0,0,0,.14);
-
-  transform: translateY(0);
-  transition: transform .08s ease, box-shadow .08s ease, filter .08s ease, opacity .08s ease;
 }
 
-button:hover{
+button:hover {
   filter: brightness(1.05);
-  transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(0,0,0,.18);
-}
-button:active{
-  transform: translateY(0);
-  box-shadow: 0 10px 20px rgba(0,0,0,.14);
-}
-button:disabled{
-  opacity: .45;
-  box-shadow: none;
-  cursor: not-allowed;
-  transform: none;
 }
 
-/* タイプ選択・回答ボタン：カラフルカード */
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ===== タイプ選択・回答ボタン ===== */
 .type-buttons button,
-.answer-buttons button{
+.answer-buttons button {
   width: min(760px, 100%);
   display: block;
   margin: 10px auto;
 
-  color: #111;
   background: #fff;
+  color: #111;
   border: 2px solid rgba(0,0,0,.08);
   box-shadow: 0 12px 26px rgba(0,0,0,.10);
 }
 
-/* A/B/C/Dの見分け */
-.type-buttons button:nth-child(1){ background: rgba(255,203,112,.58); }
-.type-buttons button:nth-child(2){ background: rgba(196,255,169,.58); }
-.type-buttons button:nth-child(3){ background: rgba(152,225,255,.58); }
-.type-buttons button:nth-child(4){ background: rgba(255,170,215,.50); }
+/* タイプ色分け */
+.type-buttons button:nth-child(1) { background: rgba(255,203,112,.60); }
+.type-buttons button:nth-child(2) { background: rgba(196,255,169,.60); }
+.type-buttons button:nth-child(3) { background: rgba(152,225,255,.60); }
+.type-buttons button:nth-child(4) { background: rgba(255,170,215,.55); }
 
-/* 回答A/B/Cの見分け */
-.answer-buttons button:nth-child(1){ background: rgba(255,203,112,.58); }
-.answer-buttons button:nth-child(2){ background: rgba(152,225,255,.58); }
-.answer-buttons button:nth-child(3){ background: rgba(196,255,169,.58); }
+.answer-buttons button:nth-child(1) { background: rgba(255,203,112,.60); }
+.answer-buttons button:nth-child(2) { background: rgba(152,225,255,.60); }
+.answer-buttons button:nth-child(3) { background: rgba(196,255,169,.60); }
 
-/* 選択中：くっきり＋映え */
+/* 選択中 */
 .type-buttons button.selected,
-.answer-buttons button.selected{
-  border-color: rgba(0,0,0,.58);
+.answer-buttons button.selected {
+  border-color: rgba(0,0,0,.55);
   box-shadow:
     0 18px 40px rgba(0,0,0,.18),
     0 0 0 4px rgba(255,255,255,.75) inset;
 }
 
-/* ナビ（戻る/次へ/保存）は少し目立たせる */
-#nextButton, #startButton, #typeNextButton, #saveTxtButton{
+/* ===== ナビ系ボタン ===== */
+#nextButton,
+#startButton,
+#typeNextButton,
+#saveTxtButton {
   width: min(520px, 100%);
-  display: inline-block;
   background: linear-gradient(90deg, #111, #2b2b2b);
 }
-#backButton{
+
+#backButton {
   background: #fff;
   color: #111;
   border: 2px solid rgba(0,0,0,.15);
 }
 
-/* 結果画像 */
-.result-box img{
+/* ===== 結果画像 ===== */
+.result-box img {
   max-width: 100%;
   height: auto;
   display: block;
@@ -208,16 +178,22 @@ button:disabled{
   box-shadow: 0 14px 30px rgba(0,0,0,.14);
 }
 
-/* 注意書き */
-.small-note{
+/* ===== 注意書き ===== */
+.small-note {
   font-size: 13px;
   color: rgba(0,0,0,.70);
   margin-top: 8px;
 }
 
-/* スマホ最適化 */
-@media (max-width: 520px){
-  body{ padding: 14px; }
-  h1{ font-size: 26px; }
-  .form-row{ grid-template-columns: 1fr; }
+/* ===== スマホ対応 ===== */
+@media (max-width: 520px) {
+  body {
+    padding: 14px;
+  }
+  h1 {
+    font-size: 26px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
