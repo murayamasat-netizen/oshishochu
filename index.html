@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>推し焼酎　問診表</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      text-align: center;
+    }
+    .hidden {
+      display: none;
+    }
+    .center {
+      text-align: center;
+    }
+    .type-buttons button,
+    .answer-buttons button,
+    #nextButton,
+    #backButton,
+    #restartButton {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .question-box, .result-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+    .result-box img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 10px auto;
+    }
+    /* 選択中ボタンの見た目 */
+    .answer-buttons button.selected {
+      background-color: #333;
+      color: #fff;
+    }
+    .nav-buttons {
+      margin-top: 12px;
+    }
+    /* 結果テキストの改行を有効にする */
+    #resultText {
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>推し焼酎発見！</h1>
+
+  <!-- ステップ1：タイプ選択 -->
+  <section id="typeSelectSection">
+    <h2>まず、好きな焼酎のタイプを教えてください</h2>
+    <div class="center type-buttons">
+      <button data-type="A">A.芋らしい、スウィート、濃厚</button>
+      <button data-type="B">B.芋らしい、スウィート、すっきり</button>
+      <button data-type="C">C.フルーティ、すっきり、飲みごたえ</button>
+      <button data-type="D">D.フルーティ、すっきり、軽快</button>
+    </div>
+  </section>
+
+  <!-- ステップ2：質問表示 -->
+  <section id="questionSection" class="hidden">
+    <h2 id="currentTypeTitle"></h2>
+    <div class="question-box">
+      <p id="questionCounter"></p>
+      <h3 id="questionText"></h3>
+      <div class="answer-buttons center">
+        <button data-answer="A" id="answerA"></button>
+        <button data-answer="B" id="answerB"></button>
+        <button data-answer="C" id="answerC"></button>
+      </div>
+      <div class="center nav-buttons">
+        <button id="backButton">戻る</button>
+        <button id="nextButton" disabled>次へ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ステップ3：結果表示 -->
+  <section id="resultSection" class="hidden">
+    <h2>診断結果</h2>
+    <div class="result-box">
+      <h3 id="resultTitle"></h3>
+      <img id="resultImage" alt="診断結果のイメージ">
+      <p id="resultText"></p>
+    </div>
+    <div class="center" style="margin-top: 20px;">
+      <button id="restartButton">最初に戻る</button>
+    </div>
+  </section>
+
+  <script>
+    // ===== 質問データ（A〜D、各7問） =====
+    const questions = {
+      A: [
+        {
+          text: "理想の飲み会は？",
+          options: {
+            A: "一人で楽しむ、または少人数で会話を楽しむ",
+            B: "料理とお酒をじっくり楽しむ",
+            C: "大人数でワイワイ"
+          }
+        },
+        {
+          text: "行ってみたい旅行は？",
+          options: {
+            A: "歴史のある街で伝統文化を堪能",
+            B: "美食を求めて食べ歩き",
+            C: "秘境やあまりみんなが行かない穴場で冒険"
+          }
+        },
+        {
+          text: "好きな色の系統は？",
+          options: {
+            A: "深みのある藍色や茶色",
+            B: "淡いパステルカラー",
+            C: "鮮やかなビビッドカラー"
+          }
+        },
+        {
+          text: "好きな映画は？",
+          options: {
+            A: "時代劇や歴史映画",
+            B: "ヒューマンドラマ",
+            C: "アクションやSF"
+          }
+        },
+        {
+          text: "好きな鹿児島の食べ物は？",
+          options: {
+            A: "さつまあげ",
+            B: "とりさし",
+            C: "しろくま"
+          }
+        },
+        {
+          text: "好きな季節は？",
+          options: {
+            A: "春",
+            B: "秋",
+            C: "夏"
+          }
+        },
+        {
+          text: "カフェで頼むなら？",
+          options: {
+            A: "深入り珈琲",
+            B: "季節限定のラテ",
+            C: "甘いフラペチーノ"
+          }
+        }
+      ],
+      B: [
+        {
+          text: "飲み会でのあなたは？",
+          options: {
+            A: "地元の話題や思い出話で盛り上げる",
+            B: "周りの話の聞き手役",
+            C: "場をまとめてバランスを取る"
+          }
+        },
+        {
+          text: "プレゼントで貰って嬉しいのは？",
+          options: {
+            A: "ご当地の特産品",
+            B: "アロマやハンドクリームなど癒しグッズ",
+            C: "実用的な日用品"
+          }
+        },
+        {
+          text: "旅行に行くならどこ？",
+          options: {
+            A: "旅行先の歴史や文化を感じる旅",
+            B: "温泉や自然でのんびり",
+            C: "都会でショッピングやグルメ"
+          }
+        },
+        {
+          text: "好きな色の系統は？",
+          options: {
+            A: "温かみのある茶色やオレンジ",
+            B: "やさしいパステルカラー",
+            C: "落ち着いたネイビーやグレー"
+          }
+        },
+        {
+          text: "理想の休日は？",
+          options: {
+            A: "地元のイベントや祭りに参加",
+            B: "お家でゆっくり映画や読書",
+            C: "カフェやショッピング"
+          }
+        },
+        {
+          text: "好きな教科は？",
+          options: {
+            A: "歴史",
+            B: "家庭科",
+            C: "数学"
+          }
+        },
+        {
+          text: "理想の晩酌シーンは？",
+          options: {
+            A: "地元の新鮮な魚と一緒に",
+            B: "お風呂上りにゆったりと",
+            C: "音楽を流しながら上品に"
+          }
+        }
+      ],
+      C: [
+        {
+          text: "好きなドリンクは？",
+          options: {
+            A: "香り高い紅茶や吟醸香の強い清酒",
+            B: "カラフルなカクテル",
+            C: "ハーブティーやオーガニックワイン"
+          }
+        },
+        {
+          text: "一番惹かれる言葉は？",
+          options: {
+            A: "新感覚",
+            B: "インスタ映え",
+            C: "自然、天然"
+          }
+        },
+        {
+          text: "理想の休日は？",
+          options: {
+            A: "都心部でショッピング",
+            B: "友達や家族と集まってわいわい",
+            C: "空気の良い大自然でリラックス"
+          }
+        },
+        {
+          text: "秋と言えば？",
+          options: {
+            A: "食欲の秋",
+            B: "運動の秋",
+            C: "読書の秋"
+          }
+        },
+        {
+          text: "好きな空の景色は？",
+          options: {
+            A: "夕焼け空",
+            B: "花火が上がる夜空",
+            C: "霧がかった森の空"
+          }
+        },
+        {
+          text: "あなたを動物に例えると？",
+          options: {
+            A: "ライオン",
+            B: "いぬ",
+            C: "うさぎ"
+          }
+        },
+        {
+          text: "SNSでよく見るのは？",
+          options: {
+            A: "オシャレカフェや新商品グルメ",
+            B: "イベントやフェス",
+            C: "ていねいな暮らし（収納、ガーデニング）"
+          }
+        }
+      ],
+      D: [
+        {
+          text: "好きなドリンクは？",
+          options: {
+            A: "炭酸水",
+            B: "ミックスジュース",
+            C: "エナジードリンク"
+          }
+        },
+        {
+          text: "一番惹かれる言葉は？",
+          options: {
+            A: "新感覚",
+            B: "おすすめ",
+            C: "新商品、限定"
+          }
+        },
+        {
+          text: "焼酎を飲むなら？",
+          options: {
+            A: "水割りですっきりと",
+            B: "アレンジカクテル",
+            C: "炭酸割でしゅわっと"
+          }
+        },
+        {
+          text: "あなたを動物に例えると？",
+          options: {
+            A: "白鳥",
+            B: "カメレオン",
+            C: "フラミンゴ"
+          }
+        },
+        {
+          text: "食べたいいちき串木野グルメは？",
+          options: {
+            A: "まぐろラーメン",
+            B: "いちきポンカレー",
+            C: "魚っち（うおっち）"
+          }
+        },
+        {
+          text: "本屋で買うなら？",
+          options: {
+            A: "自己啓発本",
+            B: "漫画、小説",
+            C: "ファッション雑誌"
+          }
+        },
+        {
+          text: "新商品を見つけたら？",
+          options: {
+            A: "口コミを見てから吟味",
+            B: "その時の気分次第で試す",
+            C: "すぐに試してSNSにアップ"
+          }
+        }
+      ]
+    };
+
+    // ===== タイブレーク用の予備質問 =====
+    const extraQuestions = {
+      A: [
+        {
+          text: "焼酎を飲むなら？",
+          options: {
+            A: "黒千代香",
+            B: "薩摩切子",
+            C: "薩摩焼"
+          }
+        },
+        {
+          text: "焼酎を選ぶ際にどこで選ぶ？",
+          options: {
+            A: "原料、製法",
+            B: "味わいの好み",
+            C: "デザイン"
+          }
+        }
+      ],
+      B: [
+        {
+          text: "SNSでよく見るのは？",
+          options: {
+            A: "イベント",
+            B: "グルメ系",
+            C: "筋トレ、ヨガ"
+          }
+        },
+        {
+          text: "臨時収入があったら何に使いたい？",
+          options: {
+            A: "ふるさと納税やクラファン",
+            B: "家族旅行",
+            C: "貯金に回す"
+          }
+        }
+      ],
+      C: [
+        {
+          text: "友人と接するときに意識していることは？",
+          options: {
+            A: "空気感を大事に",
+            B: "盛り上げ役",
+            C: "自然体"
+          }
+        },
+        {
+          text: "好きな音楽は？",
+          options: {
+            A: "メッセージ性のある曲",
+            B: "ノリの良い曲",
+            C: "ヒーリングミュージック"
+          }
+        }
+      ],
+      D: [
+        {
+          text: "服を購入するときに重視するポイントは？",
+          options: {
+            A: "機能性",
+            B: "ブランド",
+            C: "トレンド"
+          }
+        },
+        {
+          text: "休みの日にお出かけするなら？",
+          options: {
+            A: "美術館や博物館",
+            B: "気の向くままドライブ",
+            C: "インスタで話題のカフェ"
+          }
+        }
+      ]
+    };
+
+    // ===== 結果データ（12種類） =====
+    const results = {
+      // ----- タイプA -----
+      "A_A": {
+        title: "職人魂の守護者",
+        image: "images/A_A.png",
+        text:
+          "職人魂の守護者タイプのあなた。\n" +
+          "こだわりや伝統を大事にしながら、じっくりと味わう時間を楽しめる人です。\n\n" +
+          "おすすめの焼酎：\n" +
+          "・赤海童初留取り\n" +
+          "・蔵出し秘蔵酒麦\n" +
+          "・伝兵衛新酒"
+      },
+      "A_B": {
+        title: "味わいの探究者",
+        image: "images/A_B.png",
+        text:
+          "味わいの探究者タイプのあなた。\n" +
+          "その日の気分や料理との相性を考えながら、幅広い味わいを楽しみたい人です。\n\n" +
+          "おすすめの焼酎：\n" +
+          "・蔵出し秘蔵酒芋\n" +
+          "・あんず酒\n" +
+          "・隠し蔵"
+      },
+      "A_C": {
+        title: "濃厚ハンター",
+        image: "images/A_C.png",
+        text:
+          "濃厚ハンタータイプのあなた。\n" +
+          "インパクトのある香りやコクの深い一本を見つけるのが好きな人です。\n\n" +
+          "おすすめの焼酎：\n" +
+          "・コーン焼酎\n" +
+          "・新酒初蔵仕込\n" +
+          "・海童焼き芋"
+      },
+
+      // ----- タイプB -----
+      "B_A": {
+        title: "郷土の語り部",
+        image: "images/B_A.png",
+        text:
+          "郷土の語り部タイプのあなた。\n" +
+          "地元の文化や歴史、人とのつながりを大事にしながら、あたたかい時間を紡いでいく人です。\n\n" +
+          "おすすめの焼酎：\n" +
+          "・海童\n" +
+          "・兼重芋\n" +
+          "・海童 祝の赤"
+      },
+      "B_B": {
+        title: "癒しの晩酌家",
+        image: "images/B_B.png",
+        text:
+          "癒しの晩酌家タイプのあなた。\n" +
+          "一日の終わりにほっと一息つける、ゆったりとしたお酒時間を大切にできる人です。\n\n" +
+          "おすすめの焼酎・日本酒：\n" +
+          "・焼みつき芋\n" +
+          "・薩州正宗 純米酒\n" +
+          "・黄麹薩摩富士"
+      },
+      "B_C": {
+        title: "安定のコンダクター",
+        image: "images/B_C.png",
+        text:
+          "安定のコンダクタータイプのあなた。\n" +
+          "場の空気を読みながら、みんなが心地よく過ごせるようにバランスを取るのが上手な人です。\n\n" +
+          "おすすめの焼酎：\n" +
+          "・海童祝の赤\n" +
+          "・兼重麦\n" +
+          "・海童"
+      },
+
+      // ----- タイプC -----
+      "C_A": {
+        title: "香りの魔術師",
+        image: "images/C_A.png",
+        text:
+          "香りの魔術師タイプのあなた。\n" +
+          "一杯の中にある香りのニュアンスや変化を楽しみ、感性豊かに味わえる人です。\n\n" +
+          "おすすめの焼酎：\n" +
+          "・青海童原酒\n" +
+          "・LABO017\n" +
+          "・海童栗黄金"
+      },
+      "C_B": {
+        title: "パーティーの演出家",
+        image: "images/C_B.png",
+        text:
+          "パーティーの演出家タイプのあなた。\n" +
+          "みんなで楽しめるシーン作りや、華やかな一杯で場を盛り上げるのが得意な人です。\n\n" +
+          "おすすめのリキュール・焼酎：\n" +
+          "・ホップのチルグリ\n" +
+          "・赤兎馬柚子酒\n" +
+          "・赤兎馬梅酒"
+      },
+      "C_C": {
+        title: "ナチュラル志向の調和者",
+        image: "images/C_C.png",
+        text:
+          "ナチュラル志向の調和者タイプのあなた。\n" +
+          "自然体でいられる心地よさや、素材の良さを活かした味わいを大切にする人です。\n\n" +
+          "おすすめの焼酎：\n" +
+          "・海童初留取り紫\n" +
+          "・マーガオのチルグリ\n" +
+          "・薩摩はやひと"
+      },
+
+      // ----- タイプD -----
+      "D_A": {
+        title: "爽快スタイリスト",
+        image: "images/D_A.png",
+        text:
+          "爽快スタイリストタイプのあなた。\n" +
+          "すっきりとした飲み口や、キリっとした印象の一杯で自分らしさを表現する人です。\n\n" +
+          "おすすめの焼酎：\n" +
+          "・赤兎馬\n" +
+          "・海童蒼\n" +
+          "・紫の赤兎馬"
+      },
+      "D_B": {
+        title: "直感のアーティスト",
+        image: "images/D_B.png",
+        text:
+          "直感のアーティストタイプのあなた。\n" +
+          "そのときのひらめきや感性を大事にして、新しい味わいにも柔軟に挑戦できる人です。\n\n" +
+          "おすすめの焼酎：\n" +
+          "・赤兎馬玉茜\n" +
+          "・赤兎馬B\n" +
+          "・うかぜ"
+      },
+      "D_C": {
+        title: "トレンドキャッチャー",
+        image: "images/D_C.png",
+        text:
+          "トレンドキャッチャータイプのあなた。\n" +
+          "新商品や限定品、話題の一本をいち早くチェックして楽しむのが好きな人です。\n\n" +
+          "おすすめの焼酎・リキュール：\n" +
+          "・LABO016\n" +
+          "・赤兎馬抹茶\n" +
+          "・だいやめ"
+      }
+    };
+
+    // ===== 状態管理用変数 =====
+    let selectedBaseType = null;  // A/B/C/D
+    let currentQuestionIndex = 0; // 0〜6
+    let answers = [];             // 通常7問の回答
+    let extraAnswers = [];        // 予備質問の回答
+    let isTieBreak = false;       // タイブレーク中か
+    let tieBreakIndex = 0;        // 予備質問のインデックス
+
+    // ===== DOM 取得 =====
+    const typeSelectSection = document.getElementById("typeSelectSection");
+    const questionSection = document.getElementById("questionSection");
+    const resultSection = document.getElementById("resultSection");
+
+    const currentTypeTitle = document.getElementById("currentTypeTitle");
+    const questionCounter = document.getElementById("questionCounter");
+    const questionText = document.getElementById("questionText");
+    const answerAButton = document.getElementById("answerA");
+    const answerBButton = document.getElementById("answerB");
+    const answerCButton = document.getElementById("answerC");
+    const nextButton = document.getElementById("nextButton");
+    const backButton = document.getElementById("backButton");
+
+    const resultTitle = document.getElementById("resultTitle");
+    const resultImage = document.getElementById("resultImage");
+    const resultText = document.getElementById("resultText");
+    const restartButton = document.getElementById("restartButton");
+
+    const answerButtons = document.querySelectorAll(".answer-buttons button");
+
+    // ===== イベント設定 =====
+    // タイプ選択ボタン
+    document.querySelectorAll(".type-buttons button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        selectedBaseType = btn.dataset.type; // "A"〜"D"
+        startQuestions();
+      });
+    });
+
+    // 回答ボタン（選択＆色変更）
+    answerButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const answer = btn.dataset.answer; // "A"/"B"/"C"
+
+        // まず全部の選択状態をクリア
+        answerButtons.forEach(b => b.classList.remove("selected"));
+
+        // クリックされたボタンだけ選択状態に
+        btn.classList.add("selected");
+
+        // 回答を保存
+        if (!isTieBreak) {
+          answers[currentQuestionIndex] = answer;
+        } else {
+          extraAnswers[tieBreakIndex] = answer;
+        }
+
+        nextButton.disabled = false;
+      });
+    });
+
+    // 次へボタン
+    nextButton.addEventListener("click", () => {
+      nextButton.disabled = true;
+
+      if (!isTieBreak) {
+        // 通常質問モード
+        if (currentQuestionIndex < questions[selectedBaseType].length - 1) {
+          currentQuestionIndex++;
+          showQuestion();
+        } else {
+          // 7問終了 → 判定 or タイブレークへ
+          const counts = calcCounts(false);
+          const unique = findUniqueDominant(counts);
+          if (unique) {
+            showResult(unique);
+          } else {
+            // タイブレーク開始
+            isTieBreak = true;
+            tieBreakIndex = 0;
+            extraAnswers = [];
+            showTieBreakQuestion();
+          }
+        }
+      } else {
+        // タイブレークモード
+        const counts = calcCounts(true);
+        const unique = findUniqueDominant(counts);
+        const extras = extraQuestions[selectedBaseType] || [];
+
+        if (unique) {
+          showResult(unique);
+        } else if (tieBreakIndex < extras.length - 1) {
+          // まだ予備質問が残っている
+          tieBreakIndex++;
+          showTieBreakQuestion();
+        } else {
+          // 予備質問を全部使っても決着しない → 優先順位(A>B>C)で決める
+          const dominant = chooseDominantWithPriority(counts);
+          showResult(dominant);
+        }
+      }
+    });
+
+    // 戻るボタン
+    backButton.addEventListener("click", () => {
+      // 戻る先には必ず回答がある前提なので、nextは有効にしてしまう
+      nextButton.disabled = false;
+
+      if (!isTieBreak) {
+        // 通常質問モード：0より前には戻らない
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          showQuestion();
+        }
+      } else {
+        // タイブレークモード：予備質問内でのみ戻る
+        if (tieBreakIndex > 0) {
+          tieBreakIndex--;
+          showTieBreakQuestion();
+        }
+      }
+    });
+
+    // 最初に戻る
+    restartButton.addEventListener("click", () => {
+      selectedBaseType = null;
+      currentQuestionIndex = 0;
+      answers = [];
+      extraAnswers = [];
+      isTieBreak = false;
+      tieBreakIndex = 0;
+      resultSection.classList.add("hidden");
+      questionSection.classList.add("hidden");
+      typeSelectSection.classList.remove("hidden");
+    });
+
+    // ===== 関数群 =====
+    function startQuestions() {
+      typeSelectSection.classList.add("hidden");
+      questionSection.classList.remove("hidden");
+      currentQuestionIndex = 0;
+      answers = [];
+      extraAnswers = [];
+      isTieBreak = false;
+      tieBreakIndex = 0;
+      showQuestion();
+    }
+
+    function clearSelection() {
+      answerButtons.forEach(b => b.classList.remove("selected"));
+    }
+
+    function restoreSelection(answer) {
+      clearSelection();
+      if (!answer) return;
+      if (answer === "A") answerAButton.classList.add("selected");
+      if (answer === "B") answerBButton.classList.add("selected");
+      if (answer === "C") answerCButton.classList.add("selected");
+    }
+
+    function showQuestion() {
+      const qList = questions[selectedBaseType];
+      const q = qList[currentQuestionIndex];
+
+      isTieBreak = false;
+
+      currentTypeTitle.textContent = `選択中のタイプ：${selectedBaseType}`;
+      questionCounter.textContent = `質問 ${currentQuestionIndex + 1} / ${qList.length}`;
+      questionText.textContent = q.text;
+
+      answerAButton.textContent = `A. ${q.options.A}`;
+      answerBButton.textContent = `B. ${q.options.B}`;
+      answerCButton.textContent = `C. ${q.options.C}`;
+
+      // ボタンの選択状態を復元
+      restoreSelection(answers[currentQuestionIndex]);
+
+      // 回答済みなら「次へ」を有効、未回答なら無効
+      nextButton.disabled = typeof answers[currentQuestionIndex] === "undefined";
+
+      // 1問目は戻る無効
+      backButton.disabled = (currentQuestionIndex === 0);
+    }
+
+    function showTieBreakQuestion() {
+      const extras = extraQuestions[selectedBaseType] || [];
+      const q = extras[tieBreakIndex];
+
+      isTieBreak = true;
+
+      currentTypeTitle.textContent = `選択中のタイプ：${selectedBaseType}（延長戦）`;
+      questionCounter.textContent = `延長戦 ${tieBreakIndex + 1} / ${extras.length}`;
+      questionText.textContent = q.text;
+
+      answerAButton.textContent = `A. ${q.options.A}`;
+      answerBButton.textContent = `B. ${q.options.B}`;
+      answerCButton.textContent = `C. ${q.options.C}`;
+
+      // ボタンの選択状態を復元
+      restoreSelection(extraAnswers[tieBreakIndex]);
+
+      nextButton.disabled = typeof extraAnswers[tieBreakIndex] === "undefined";
+
+      // 延長戦1問目は戻る無効
+      backButton.disabled = (tieBreakIndex === 0);
+    }
+
+    // 回答数を集計する
+    // includeExtra = true なら予備質問も含めて集計
+    function calcCounts(includeExtra) {
+      const count = { A: 0, B: 0, C: 0 };
+      answers.forEach(a => {
+        if (count[a] !== undefined) count[a]++;
+      });
+      if (includeExtra) {
+        extraAnswers.forEach(a => {
+          if (count[a] !== undefined) count[a]++;
+        });
+      }
+      return count;
+    }
+
+    // 一意の最多があるかどうか判定（なければ null）
+    function findUniqueDominant(count) {
+      const values = [count.A, count.B, count.C];
+      const max = Math.max(...values);
+      const winners = [];
+      if (count.A === max) winners.push("A");
+      if (count.B === max) winners.push("B");
+      if (count.C === max) winners.push("C");
+      return winners.length === 1 ? winners[0] : null;
+    }
+
+    // 同数でも必ずどれか一つを返す（A > B > C の優先順位）
+    function chooseDominantWithPriority(count) {
+      const max = Math.max(count.A, count.B, count.C);
+      if (count.A === max) return "A";
+      if (count.B === max) return "B";
+      return "C";
+    }
+
+    function showResult(dominantAnswer) {
+      questionSection.classList.add("hidden");
+      resultSection.classList.remove("hidden");
+
+      const resultKey = `${selectedBaseType}_${dominantAnswer}`;
+      const resultData = results[resultKey];
+
+      if (resultData) {
+        resultTitle.textContent = resultData.title;
+        resultImage.src = resultData.image;
+        resultImage.alt = resultData.title;
+        resultText.textContent = resultData.text;
+      } else {
+        // 結果が未設定の場合のフォールバック
+        resultTitle.textContent = "結果データが設定されていません";
+        resultImage.src = "";
+        resultImage.alt = "";
+        resultText.textContent = `キー: ${resultKey} に対応する結果が results に存在しません。`;
+      }
+    }
+  </script>
+</body>
+</html>
