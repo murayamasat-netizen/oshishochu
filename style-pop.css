@@ -1,0 +1,150 @@
+/* =========================
+   POP / EVENT THEME (②)
+   既存CSSの一番下に追加
+   ========================= */
+
+/* 全体 */
+body{
+  max-width: 980px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255,203,112,.35), transparent 45%),
+    radial-gradient(circle at 90% 20%, rgba(152,225,255,.35), transparent 45%),
+    radial-gradient(circle at 30% 90%, rgba(196,255,169,.30), transparent 50%),
+    #fff;
+}
+
+h1{
+  font-size: 30px;
+  letter-spacing: .02em;
+  margin: 8px 0 18px;
+}
+h2{ font-size: 20px; margin: 14px 0; }
+h3{ font-size: 18px; margin: 8px 0; }
+
+/* カード */
+.setup-box, .question-box, .result-box{
+  border: none;
+  border-radius: 18px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 14px 40px rgba(0,0,0,.10);
+  position: relative;
+  overflow: hidden;
+}
+.setup-box::before, .question-box::before, .result-box::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg, rgba(255,203,112,.22), rgba(152,225,255,.18), rgba(196,255,169,.16));
+  pointer-events:none;
+}
+
+/* フォーム */
+.form-row{
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+}
+label{ font-weight: 700; }
+select, input{
+  border: 2px solid rgba(0,0,0,.10);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+  outline: none;
+}
+select:focus, input:focus{
+  border-color: rgba(0,0,0,.28);
+}
+
+/* ボタン共通（イベント感：大きめ＋ぷっくり） */
+button{
+  border: 0;
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  box-shadow: 0 10px 22px rgba(0,0,0,.14);
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, filter .08s ease, opacity .08s ease;
+  background: #111;
+  color: #fff;
+}
+button:hover{
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(0,0,0,.18);
+}
+button:active{
+  transform: translateY(0);
+  box-shadow: 0 10px 20px rgba(0,0,0,.14);
+}
+button:disabled{
+  opacity: .45;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* タイプ選択・回答ボタンは“カラフルカード” */
+.type-buttons button,
+.answer-buttons button{
+  width: min(760px, 100%);
+  display: block;
+  margin: 10px auto;
+  color: #111;
+  background: #fff;
+  border: 2px solid rgba(0,0,0,.08);
+  box-shadow: 0 12px 26px rgba(0,0,0,.10);
+}
+
+/* ボタンの見分け（A/B/C/Dや回答） */
+.type-buttons button:nth-child(1){ background: rgba(255,203,112,.55); }
+.type-buttons button:nth-child(2){ background: rgba(196,255,169,.55); }
+.type-buttons button:nth-child(3){ background: rgba(152,225,255,.55); }
+.type-buttons button:nth-child(4){ background: rgba(255,170,215,.45); }
+
+.answer-buttons button:nth-child(1){ background: rgba(255,203,112,.55); }
+.answer-buttons button:nth-child(2){ background: rgba(152,225,255,.55); }
+.answer-buttons button:nth-child(3){ background: rgba(196,255,169,.55); }
+
+/* 選択中：くっきり＋キラッ */
+.type-buttons button.selected,
+.answer-buttons button.selected{
+  border-color: rgba(0,0,0,.55);
+  box-shadow:
+    0 18px 40px rgba(0,0,0,.18),
+    0 0 0 4px rgba(255,255,255,.75) inset;
+}
+
+/* ナビ（戻る/次へ/保存）だけ少し目立たせる */
+#nextButton, #startButton, #typeNextButton, #saveTxtButton{
+  width: min(520px, 100%);
+  display: inline-block;
+  background: linear-gradient(90deg, #111, #2b2b2b);
+}
+#backButton{
+  background: #fff;
+  color: #111;
+  border: 2px solid rgba(0,0,0,.15);
+}
+
+/* 注意書き */
+.small-note{
+  font-size: 13px;
+  color: rgba(0,0,0,.70);
+}
+
+/* 結果画像：イベント向けに少し映える */
+.result-box img{
+  border-radius: 14px;
+  box-shadow: 0 14px 30px rgba(0,0,0,.14);
+  margin-top: 14px;
+}
+
+/* スマホ微調整 */
+@media (max-width: 520px){
+  body{ padding: 14px; }
+  h1{ font-size: 26px; }
+  .form-row{ grid-template-columns: 1fr; }
+  label{ width:auto; }
+}
