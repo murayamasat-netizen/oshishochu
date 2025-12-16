@@ -1,18 +1,63 @@
-/* =========================
-   POP / EVENT THEME (②)
-   既存CSSの一番下に追加
-   ========================= */
+/* =========================================
+   推し焼酎診断 - POP / EVENT THEME + 推し活背景
+   ファイル名: style-pop.css
+   背景画像: images/bg-oshikatsu.png
+   ========================================= */
 
-/* 全体 */
+/* まずは既存のベース崩れを防ぐ */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
 body{
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
   max-width: 980px;
+  margin: 0 auto;
+  padding: 20px;
+  line-height: 1.6;
+  position: relative;
+
+  /* 背景は画像の上に“ほんのり”色を足す */
   background:
-    radial-gradient(circle at 10% 10%, rgba(255,203,112,.35), transparent 45%),
-    radial-gradient(circle at 90% 20%, rgba(152,225,255,.35), transparent 45%),
-    radial-gradient(circle at 30% 90%, rgba(196,255,169,.30), transparent 50%),
+    radial-gradient(circle at 12% 12%, rgba(255,203,112,.28), transparent 46%),
+    radial-gradient(circle at 88% 18%, rgba(152,225,255,.28), transparent 46%),
+    radial-gradient(circle at 30% 88%, rgba(196,255,169,.24), transparent 50%),
     #fff;
 }
 
+/* 推し活イラスト背景（全面・薄く・固定） */
+body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+
+  /* ★ここが背景画像 */
+  background-image: url("images/bg-oshikatsu.png");
+  background-repeat: repeat;
+  background-size: 520px auto;     /* うちわ等の大きさ */
+  background-position: center;
+
+  opacity: 0.14;                   /* 薄さ（0.10〜0.18で調整） */
+  filter: saturate(1.05) blur(0px);
+  pointer-events: none;
+  z-index: -2;
+}
+
+/* キラっとした粒を上に重ねてイベント感UP（任意だがおすすめ） */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 18% 30%, rgba(255,255,255,.50), transparent 42%),
+    radial-gradient(circle at 78% 22%, rgba(255,255,255,.45), transparent 46%),
+    radial-gradient(circle at 55% 82%, rgba(255,255,255,.42), transparent 44%);
+  opacity: .55;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 見出し */
+h1, h2, h3 { text-align: center; }
 h1{
   font-size: 30px;
   letter-spacing: .02em;
@@ -21,7 +66,12 @@ h1{
 h2{ font-size: 20px; margin: 14px 0; }
 h3{ font-size: 18px; margin: 8px 0; }
 
-/* カード */
+/* 汎用 */
+.hidden{ display: none; }
+.center{ text-align: center; }
+#resultText{ white-space: pre-wrap; }
+
+/* カード（質問/結果/属性入力） */
 .setup-box, .question-box, .result-box{
   border: none;
   border-radius: 18px;
@@ -30,22 +80,34 @@ h3{ font-size: 18px; margin: 8px 0; }
   position: relative;
   overflow: hidden;
 }
+
+/* カードに淡い帯を敷いてポップに */
 .setup-box::before, .question-box::before, .result-box::before{
   content:"";
   position:absolute;
   inset:0;
-  background:
-    linear-gradient(90deg, rgba(255,203,112,.22), rgba(152,225,255,.18), rgba(196,255,169,.16));
+  background: linear-gradient(90deg,
+    rgba(255,203,112,.20),
+    rgba(152,225,255,.16),
+    rgba(196,255,169,.14),
+    rgba(255,170,215,.12)
+  );
   pointer-events:none;
 }
 
 /* フォーム */
 .form-row{
+  display: grid;
   grid-template-columns: 140px 1fr;
   gap: 12px;
+  align-items: center;
+  margin: 10px 0;
 }
-label{ font-weight: 700; }
+label{ font-weight: 800; }
+
 select, input{
+  font-size: 16px;
+  padding: 10px 12px;
   border: 2px solid rgba(0,0,0,.10);
   border-radius: 14px;
   background: #fff;
@@ -56,19 +118,25 @@ select:focus, input:focus{
   border-color: rgba(0,0,0,.28);
 }
 
-/* ボタン共通（イベント感：大きめ＋ぷっくり） */
+/* ボタン共通（ぷっくり） */
 button{
+  margin: 6px;
   border: 0;
   border-radius: 16px;
   padding: 12px 18px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 900;
   letter-spacing: .02em;
-  box-shadow: 0 10px 22px rgba(0,0,0,.14);
-  transform: translateY(0);
-  transition: transform .08s ease, box-shadow .08s ease, filter .08s ease, opacity .08s ease;
+  cursor: pointer;
+
   background: #111;
   color: #fff;
+  box-shadow: 0 10px 22px rgba(0,0,0,.14);
+
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, filter .08s ease, opacity .08s ease;
 }
+
 button:hover{
   filter: brightness(1.05);
   transform: translateY(-1px);
@@ -85,38 +153,40 @@ button:disabled{
   transform: none;
 }
 
-/* タイプ選択・回答ボタンは“カラフルカード” */
+/* タイプ選択・回答ボタン：カラフルカード */
 .type-buttons button,
 .answer-buttons button{
   width: min(760px, 100%);
   display: block;
   margin: 10px auto;
+
   color: #111;
   background: #fff;
   border: 2px solid rgba(0,0,0,.08);
   box-shadow: 0 12px 26px rgba(0,0,0,.10);
 }
 
-/* ボタンの見分け（A/B/C/Dや回答） */
-.type-buttons button:nth-child(1){ background: rgba(255,203,112,.55); }
-.type-buttons button:nth-child(2){ background: rgba(196,255,169,.55); }
-.type-buttons button:nth-child(3){ background: rgba(152,225,255,.55); }
-.type-buttons button:nth-child(4){ background: rgba(255,170,215,.45); }
+/* A/B/C/Dの見分け */
+.type-buttons button:nth-child(1){ background: rgba(255,203,112,.58); }
+.type-buttons button:nth-child(2){ background: rgba(196,255,169,.58); }
+.type-buttons button:nth-child(3){ background: rgba(152,225,255,.58); }
+.type-buttons button:nth-child(4){ background: rgba(255,170,215,.50); }
 
-.answer-buttons button:nth-child(1){ background: rgba(255,203,112,.55); }
-.answer-buttons button:nth-child(2){ background: rgba(152,225,255,.55); }
-.answer-buttons button:nth-child(3){ background: rgba(196,255,169,.55); }
+/* 回答A/B/Cの見分け */
+.answer-buttons button:nth-child(1){ background: rgba(255,203,112,.58); }
+.answer-buttons button:nth-child(2){ background: rgba(152,225,255,.58); }
+.answer-buttons button:nth-child(3){ background: rgba(196,255,169,.58); }
 
-/* 選択中：くっきり＋キラッ */
+/* 選択中：くっきり＋映え */
 .type-buttons button.selected,
 .answer-buttons button.selected{
-  border-color: rgba(0,0,0,.55);
+  border-color: rgba(0,0,0,.58);
   box-shadow:
     0 18px 40px rgba(0,0,0,.18),
     0 0 0 4px rgba(255,255,255,.75) inset;
 }
 
-/* ナビ（戻る/次へ/保存）だけ少し目立たせる */
+/* ナビ（戻る/次へ/保存）は少し目立たせる */
 #nextButton, #startButton, #typeNextButton, #saveTxtButton{
   width: min(520px, 100%);
   display: inline-block;
@@ -128,23 +198,26 @@ button:disabled{
   border: 2px solid rgba(0,0,0,.15);
 }
 
+/* 結果画像 */
+.result-box img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 14px auto 10px;
+  border-radius: 14px;
+  box-shadow: 0 14px 30px rgba(0,0,0,.14);
+}
+
 /* 注意書き */
 .small-note{
   font-size: 13px;
   color: rgba(0,0,0,.70);
+  margin-top: 8px;
 }
 
-/* 結果画像：イベント向けに少し映える */
-.result-box img{
-  border-radius: 14px;
-  box-shadow: 0 14px 30px rgba(0,0,0,.14);
-  margin-top: 14px;
-}
-
-/* スマホ微調整 */
+/* スマホ最適化 */
 @media (max-width: 520px){
   body{ padding: 14px; }
   h1{ font-size: 26px; }
   .form-row{ grid-template-columns: 1fr; }
-  label{ width:auto; }
 }
