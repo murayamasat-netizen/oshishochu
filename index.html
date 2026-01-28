@@ -5,14 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="style-pop.css">
   <title>推し焼酎　問診表</title>
+
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-      line-height: 1.6;
-    }
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.6; }
     h1, h2, h3 { text-align: center; }
     .hidden { display: none; }
     .center { text-align: center; }
@@ -65,6 +60,8 @@
     select, input {
       font-size: 16px;
       padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .small-note {
@@ -72,13 +69,57 @@
       color: #555;
       margin-top: 6px;
     }
+
+    /* ===== 推し焼酎（2本）表示 ===== */
+    .recommend-list{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .recommend-item{
+      text-align: center;
+    }
+
+    /* 画像サイズ指定（ここだけ調整すればOK） */
+    .recommend-item img{
+      width: 160px;
+      height: 220px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .recommend-item .name{
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    /* ===== タイプ選択：設問文〜選択肢までを1つの枠で（他設問と同系統） ===== */
+    #typeSelectSection .question-card{
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      padding: 16px 14px;
+      margin: 0 auto 18px;
+      box-sizing: border-box;
+    }
+    #typeSelectSection h2{
+      margin-top: 0;
+      background: transparent;
+      border: none;
+      padding: 0;
+      display: block;
+    }
+
   </style>
 </head>
 <body>
 
   <h1>推し焼酎発見！</h1>
 
-  <!-- ステップ0：属性入力（年代・性別・都道府県） -->
+  <!-- ステップ0：属性入力 -->
   <section id="setupSection">
     <h2>診断の前に教えてください</h2>
     <div class="setup-box">
@@ -86,7 +127,7 @@
         <label for="ageSelect">年代</label>
         <select id="ageSelect">
           <option value="">選択してください</option>
-          <option value="10代">10代</option>
+          <!-- 10代は診断不可：選択肢に出さない -->
           <option value="20代">20代</option>
           <option value="30代">30代</option>
           <option value="40代">40代</option>
@@ -95,6 +136,7 @@
           <option value="70代以上">70代以上</option>
         </select>
       </div>
+      <div class="small-note">※ 本診断は20代以上を対象としています。</div>
 
       <div class="form-row">
         <label for="genderSelect">性別</label>
@@ -108,68 +150,29 @@
 
       <div class="form-row">
         <label for="prefSelect">お住まい（都道府県）</label>
-        <!-- 都道府県はHTML直書き（SharePoint等でJSが止まっても選択できる） -->
         <select id="prefSelect">
           <option value="">選択してください</option>
-          <option value="北海道">北海道</option>
-          <option value="青森県">青森県</option>
-          <option value="岩手県">岩手県</option>
-          <option value="宮城県">宮城県</option>
-          <option value="秋田県">秋田県</option>
-          <option value="山形県">山形県</option>
-          <option value="福島県">福島県</option>
-          <option value="茨城県">茨城県</option>
-          <option value="栃木県">栃木県</option>
-          <option value="群馬県">群馬県</option>
-          <option value="埼玉県">埼玉県</option>
-          <option value="千葉県">千葉県</option>
-          <option value="東京都">東京都</option>
-          <option value="神奈川県">神奈川県</option>
-          <option value="新潟県">新潟県</option>
-          <option value="富山県">富山県</option>
-          <option value="石川県">石川県</option>
-          <option value="福井県">福井県</option>
-          <option value="山梨県">山梨県</option>
-          <option value="長野県">長野県</option>
-          <option value="岐阜県">岐阜県</option>
-          <option value="静岡県">静岡県</option>
-          <option value="愛知県">愛知県</option>
-          <option value="三重県">三重県</option>
-          <option value="滋賀県">滋賀県</option>
-          <option value="京都府">京都府</option>
-          <option value="大阪府">大阪府</option>
-          <option value="兵庫県">兵庫県</option>
-          <option value="奈良県">奈良県</option>
-          <option value="和歌山県">和歌山県</option>
-          <option value="鳥取県">鳥取県</option>
-          <option value="島根県">島根県</option>
-          <option value="岡山県">岡山県</option>
-          <option value="広島県">広島県</option>
-          <option value="山口県">山口県</option>
-          <option value="徳島県">徳島県</option>
-          <option value="香川県">香川県</option>
-          <option value="愛媛県">愛媛県</option>
-          <option value="高知県">高知県</option>
-          <option value="福岡県">福岡県</option>
-          <option value="佐賀県">佐賀県</option>
-          <option value="長崎県">長崎県</option>
-          <option value="熊本県">熊本県</option>
-          <option value="大分県">大分県</option>
-          <option value="宮崎県">宮崎県</option>
-          <option value="鹿児島県">鹿児島県</option>
-          <option value="沖縄県">沖縄県</option>
+          <option value="北海道">北海道</option><option value="青森県">青森県</option><option value="岩手県">岩手県</option><option value="宮城県">宮城県</option><option value="秋田県">秋田県</option><option value="山形県">山形県</option><option value="福島県">福島県</option>
+          <option value="茨城県">茨城県</option><option value="栃木県">栃木県</option><option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option><option value="千葉県">千葉県</option><option value="東京都">東京都</option><option value="神奈川県">神奈川県</option>
+          <option value="新潟県">新潟県</option><option value="富山県">富山県</option><option value="石川県">石川県</option><option value="福井県">福井県</option><option value="山梨県">山梨県</option><option value="長野県">長野県</option>
+          <option value="岐阜県">岐阜県</option><option value="静岡県">静岡県</option><option value="愛知県">愛知県</option><option value="三重県">三重県</option>
+          <option value="滋賀県">滋賀県</option><option value="京都府">京都府</option><option value="大阪府">大阪府</option><option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option>
+          <option value="鳥取県">鳥取県</option><option value="島根県">島根県</option><option value="岡山県">岡山県</option><option value="広島県">広島県</option><option value="山口県">山口県</option>
+          <option value="徳島県">徳島県</option><option value="香川県">香川県</option><option value="愛媛県">愛媛県</option><option value="高知県">高知県</option>
+          <option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option><option value="長崎県">長崎県</option><option value="熊本県">熊本県</option><option value="大分県">大分県</option><option value="宮崎県">宮崎県</option><option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option>
         </select>
       </div>
 
       <div class="center">
-        <button id="startButton" disabled>次へ（タイプ選択へ）</button>
+        <button id="startButton">次へ（タイプ選択へ）</button>
       </div>
-    </div>
+    </div>    </div>
   </section>
 
-  <!-- ステップ1：タイプ選択（次へボタン方式） -->
+  <!-- ステップ1：タイプ選択 -->
   <section id="typeSelectSection" class="hidden">
-    <h2>まず、好きな焼酎のタイプを教えてください</h2>
+        <div class="question-card">
+<h2>まず、好きな焼酎のタイプを教えてください</h2>
     <div class="center type-buttons">
       <button data-type="A">A.芋らしい、スウィート、濃厚</button>
       <button data-type="B">B.芋らしい、スウィート、すっきり</button>
@@ -181,7 +184,7 @@
     </div>
   </section>
 
-  <!-- ステップ2：質問表示 -->
+  <!-- ステップ2：質問 -->
   <section id="questionSection" class="hidden">
     <h2 id="currentTypeTitle"></h2>
     <div class="question-box">
@@ -199,7 +202,7 @@
     </div>
   </section>
 
-  <!-- ステップ3：結果表示 -->
+  <!-- ステップ3：結果 -->
   <section id="resultSection" class="hidden">
     <h2>診断結果</h2>
     <div class="result-box">
@@ -207,14 +210,14 @@
       <img id="resultImage" alt="診断結果のイメージ">
       <p id="resultText"></p>
 
-      <hr>
+      <h4>あなたにおすすめの焼酎（2本）</h4>
+      <div id="recommendList" class="recommend-list"></div>
 
+      <hr>
       <div class="center">
         <button id="saveTxtButton">回答を保存する</button>
-
         <p class="small-note">
-          ※ 回答結果はこの端末にテキストファイルとして保存され、<br>
-          後日、統計・分析の目的で利用されます。
+          ※ 回答結果はこの端末にテキストファイルとして保存され、後日、統計・分析の目的で利用されます。
         </p>
       </div>
     </div>
@@ -225,7 +228,50 @@
   </section>
 
   <script>
-    // ===== 質問データ（A〜D、各7問） =====
+    // =========================================================
+    // 推し焼酎リスト（CSV内容を埋め込み）
+    // 画像ファイル名は固定：images/{result_key}_{rank}.png
+    // 例：images/A_A_1.png, images/A_A_2.png
+    // =========================================================
+    const recommendsByResultKey = {
+      // ★ここはあなたのデータに合わせて編集してください（rank順）
+      "A_A":[ {"rank":1,"name":"宇吉"}, {"rank":2,"name":"薩摩一"} ],
+      "A_B":[ {"rank":1,"name":"薩摩焼酎金山蔵"}, {"rank":2,"name":"薩州魂"} ],
+      "A_C":[ {"rank":1,"name":"薩摩焼酎金山蔵RED"}, {"rank":2,"name":"野風15年"} ],
+      "B_A":[ {"rank":1,"name":"海童"}, {"rank":2,"name":"兼重芋"} ],
+      "B_B":[ {"rank":1,"name":"うかぜ"}, {"rank":2,"name":"兼重麦"} ],
+      "B_C":[ {"rank":1,"name":"海童祝の赤"}, {"rank":2,"name":"隠し蔵"} ],
+      "C_A":[ {"rank":1,"name":"薩摩はやひと"}, {"rank":2,"name":"樹々"} ],
+      "C_B":[ {"rank":1,"name":"ホップのチルグリ"}, {"rank":2,"name":"薩州正宗純米吟醸酒"} ],
+      "C_C":[ {"rank":1,"name":"マーガオのチルグリ"}, {"rank":2,"name":"薩州正宗純米酒"} ],
+      "D_A":[ {"rank":1,"name":"伝"}, {"rank":2,"name":"西郷どんの夢"} ],
+      "D_B":[ {"rank":1,"name":"赤兎馬抹茶"}, {"rank":2,"name":"呂布"} ],
+      "D_C":[ {"rank":1,"name":"だいやめ"}, {"rank":2,"name":"赤兎馬玉茜"} ],
+    };
+
+    function renderRecommends(resultKey) {
+      const recommendList = document.getElementById("recommendList");
+      recommendList.innerHTML = "";
+
+      const items = (recommendsByResultKey[resultKey] || []).slice(0, 2);
+      if (items.length === 0) {
+        recommendList.innerHTML = "<div class='small-note'>※ おすすめデータが見つかりませんでした。</div>";
+        return;
+      }
+
+      items.forEach(item => {
+        const imgFile = `${resultKey}_${item.rank}.png`; // ★固定ルール
+        const div = document.createElement("div");
+        div.className = "recommend-item";
+        div.innerHTML = `
+          <img src="images/${imgFile}" alt="${item.name}">
+          <div class="name">${item.name}</div>
+        `;
+        recommendList.appendChild(div);
+      });
+    }
+
+    // ===== 質問データ（省略せずこのまま使えます） =====
     const questions = {
       A: [
         { text: "理想の飲み会は？", options: { A: "一人で楽しむ、または少人数で会話を楽しむ", B: "料理とお酒をじっくり楽しむ", C: "大人数でワイワイ" } },
@@ -265,7 +311,6 @@
       ]
     };
 
-    // ===== タイブレーク用の予備質問 =====
     const extraQuestions = {
       A: [
         { text: "焼酎を飲むなら？", options: { A: "黒千代香", B: "薩摩切子", C: "薩摩焼" } },
@@ -285,42 +330,33 @@
       ]
     };
 
-    // ===== 結果データ（12種類） =====
     const results = {
-      "A_A": { title: "職人魂の守護者", image: "images/A_A.png", text: "職人魂の守護者タイプのあなた。\nこだわりや伝統を大事にしながら、じっくりと味わう時間を楽しめる人です。\n\nおすすめの焼酎：\n・赤海童初留取り\n・蔵出し秘蔵酒麦\n・伝兵衛新酒" },
-      "A_B": { title: "味わいの探究者", image: "images/A_B.png", text: "味わいの探究者タイプのあなた。\nその日の気分や料理との相性を考えながら、幅広い味わいを楽しみたい人です。\n\nおすすめの焼酎：\n・蔵出し秘蔵酒芋\n・あんず酒\n・隠し蔵" },
-      "A_C": { title: "濃厚ハンター", image: "images/A_C.png", text: "濃厚ハンタータイプのあなた。\nインパクトのある香りやコクの深い一本を見つけるのが好きな人です。\n\nおすすめの焼酎：\n・コーン焼酎\n・新酒初蔵仕込\n・海童焼き芋" },
-
-      "B_A": { title: "郷土の語り部", image: "images/B_A.png", text: "郷土の語り部タイプのあなた。\n地元の文化や歴史、人とのつながりを大事にしながら、あたたかい時間を紡いでいく人です。\n\nおすすめの焼酎：\n・海童\n・兼重芋\n・海童 祝の赤" },
-      "B_B": { title: "癒しの晩酌家", image: "images/B_B.png", text: "癒しの晩酌家タイプのあなた。\n一日の終わりにほっと一息つける、ゆったりとしたお酒時間を大切にできる人です。\n\nおすすめの焼酎・日本酒：\n・焼みつき芋\n・薩州正宗 純米酒\n・黄麹薩摩富士" },
-      "B_C": { title: "安定のコンダクター", image: "images/B_C.png", text: "安定のコンダクタータイプのあなた。\n場の空気を読みながら、みんなが心地よく過ごせるようにバランスを取るのが上手な人です。\n\nおすすめの焼酎：\n・海童祝の赤\n・兼重麦\n・海童" },
-
-      "C_A": { title: "香りの魔術師", image: "images/C_A.png", text: "香りの魔術師タイプのあなた。\n一杯の中にある香りのニュアンスや変化を楽しみ、感性豊かに味わえる人です。\n\nおすすめの焼酎：\n・青海童原酒\n・LABO017\n・海童栗黄金" },
-      "C_B": { title: "パーティーの演出家", image: "images/C_B.png", text: "パーティーの演出家タイプのあなた。\nみんなで楽しめるシーン作りや、華やかな一杯で場を盛り上げるのが得意な人です。\n\nおすすめのリキュール・焼酎：\n・ホップのチルグリ\n・赤兎馬柚子酒\n・赤兎馬梅酒" },
-      "C_C": { title: "ナチュラル志向の調和者", image: "images/C_C.png", text: "ナチュラル志向の調和者タイプのあなた。\n自然体でいられる心地よさや、素材の良さを活かした味わいを大切にする人です。\n\nおすすめの焼酎：\n・海童初留取り紫\n・マーガオのチルグリ\n・薩摩はやひと" },
-
-      "D_A": { title: "爽快スタイリスト", image: "images/D_A.png", text: "爽快スタイリストタイプのあなた。\nすっきりとした飲み口や、キリっとした印象の一杯で自分らしさを表現する人です。\n\nおすすめの焼酎：\n・赤兎馬\n・海童蒼\n・紫の赤兎馬" },
-      "D_B": { title: "直感のアーティスト", image: "images/D_B.png", text: "直感のアーティストタイプのあなた。\nそのときのひらめきや感性を大事にして、新しい味わいにも柔軟に挑戦できる人です。\n\nおすすめの焼酎：\n・赤兎馬玉茜\n・赤兎馬B\n・うかぜ" },
-      "D_C": { title: "トレンドキャッチャー", image: "images/D_C.png", text: "トレンドキャッチャータイプのあなた。\n新商品や限定品、話題の一本をいち早くチェックして楽しむのが好きな人です。\n\nおすすめの焼酎・リキュール：\n・LABO016\n・赤兎馬抹茶\n・だいやめ" }
+      "A_A": { title: "職人魂の守護者", image: "images/A_A.png", text: "職人魂の守護者タイプのあなた。\nこだわりや伝統を大事にしながら、じっくりと味わう時間を楽しめる人です。" },
+      "A_B": { title: "味わいの探究者", image: "images/A_B.png", text: "味わいの探究者タイプのあなた。\nその日の気分や料理との相性を考えながら、幅広い味わいを楽しみたい人です。" },
+      "A_C": { title: "濃厚ハンター", image: "images/A_C.png", text: "濃厚ハンタータイプのあなた。\nインパクトのある香りやコクの深い一本を見つけるのが好きな人です。" },
+      "B_A": { title: "郷土の語り部", image: "images/B_A.png", text: "郷土の語り部タイプのあなた。\n地元の文化や歴史、人とのつながりを大事にしながら、あたたかい時間を紡いでいく人です。" },
+      "B_B": { title: "癒しの晩酌家", image: "images/B_B.png", text: "癒しの晩酌家タイプのあなた。\n一日の終わりにほっと一息つける、ゆったりとしたお酒時間を大切にできる人です。" },
+      "B_C": { title: "安定のコンダクター", image: "images/B_C.png", text: "安定のコンダクタータイプのあなた。\n場の空気を読みながら、みんなが心地よく過ごせるようにバランスを取るのが上手な人です。" },
+      "C_A": { title: "香りの魔術師", image: "images/C_A.png", text: "香りの魔術師タイプのあなた。\n一杯の中にある香りのニュアンスや変化を楽しみ、感性豊かに味わえる人です。" },
+      "C_B": { title: "パーティーの演出家", image: "images/C_B.png", text: "パーティーの演出家タイプのあなた。\nみんなで楽しめるシーン作りや、華やかな一杯で場を盛り上げるのが得意な人です。" },
+      "C_C": { title: "ナチュラル志向の調和者", image: "images/C_C.png", text: "ナチュラル志向の調和者タイプのあなた。\n自然体でいられる心地よさや、素材の良さを活かした味わいを大切にする人です。" },
+      "D_A": { title: "爽快スタイリスト", image: "images/D_A.png", text: "爽快スタイリストタイプのあなた。\nすっきりとした飲み口や、キリっとした印象の一杯で自分らしさを表現する人です。" },
+      "D_B": { title: "直感のアーティスト", image: "images/D_B.png", text: "直感のアーティストタイプのあなた。\nそのときのひらめきや感性を大事にして、新しい味わいにも柔軟に挑戦できる人です。" },
+      "D_C": { title: "トレンドキャッチャー", image: "images/D_C.png", text: "トレンドキャッチャータイプのあなた。\n新商品や限定品、話題の一本をいち早くチェックして楽しむのが好きな人です。" }
     };
 
-    // ===== 状態管理用変数 =====
-    let selectedBaseType = null;  // A/B/C/D
-    let currentQuestionIndex = 0; // 0〜6
-    let answers = [];             // 通常7問の回答
-    let extraAnswers = [];        // 予備質問の回答
-    let isTieBreak = false;       // タイブレーク中か
-    let tieBreakIndex = 0;        // 予備質問のインデックス
+    let selectedBaseType = null;
+    let currentQuestionIndex = 0;
+    let answers = [];
+    let extraAnswers = [];
+    let isTieBreak = false;
+    let tieBreakIndex = 0;
 
-    // 属性
     let demoAge = "";
     let demoGender = "";
     let demoPref = "";
-
-    // 結果確定後に「保存ボタン」で使う
     let lastRecordForSave = null;
 
-    // ===== DOM 取得 =====
     const setupSection = document.getElementById("setupSection");
     const typeSelectSection = document.getElementById("typeSelectSection");
     const questionSection = document.getElementById("questionSection");
@@ -345,21 +381,32 @@
     const resultImage = document.getElementById("resultImage");
     const resultText = document.getElementById("resultText");
     const restartButton = document.getElementById("restartButton");
-
     const saveTxtButton = document.getElementById("saveTxtButton");
 
     const answerButtons = document.querySelectorAll(".answer-buttons button");
     const typeButtons = document.querySelectorAll(".type-buttons button");
 
-    // ===== 属性入力：必須チェック =====
     function validateSetup() {
-      startButton.disabled = !(ageSelect.value && genderSelect.value && prefSelect.value);
+      // 3つすべて選択されたら「次へ」を有効化（selectedIndexで堅牢に判定）
+      const ok =
+        ageSelect && genderSelect && prefSelect &&
+        ageSelect.selectedIndex > 0 &&
+        genderSelect.selectedIndex > 0 &&
+        prefSelect.selectedIndex > 0;
+      startButton.disabled = !ok;
     }
-    ageSelect.addEventListener("change", validateSetup);
-    genderSelect.addEventListener("change", validateSetup);
-    prefSelect.addEventListener("change", validateSetup);
+    // change だけだと環境によって発火が遅い/されないことがあるため input も監視
+    ["change","input"].forEach(evt => {
+      ageSelect.addEventListener(evt, validateSetup);
+      genderSelect.addEventListener(evt, validateSetup);
+      prefSelect.addEventListener(evt, validateSetup);
+    });
+    // 初期状態も評価
+    validateSetup();
+    document.addEventListener("DOMContentLoaded", validateSetup);
+    setTimeout(validateSetup, 50);
 
-    // ステップ0 → ステップ1
+
     startButton.addEventListener("click", () => {
       demoAge = ageSelect.value;
       demoGender = genderSelect.value;
@@ -369,7 +416,6 @@
       typeSelectSection.classList.remove("hidden");
     });
 
-    // ===== タイプ選択（次へボタン方式） =====
     typeButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         typeButtons.forEach(b => b.classList.remove("selected"));
@@ -379,29 +425,21 @@
       });
     });
 
-    typeNextButton.addEventListener("click", () => {
-      startQuestions();
-    });
+    typeNextButton.addEventListener("click", () => startQuestions());
 
-    // ===== 回答ボタン（選択＆色変更） =====
     answerButtons.forEach(btn => {
       btn.addEventListener("click", () => {
-        const answer = btn.dataset.answer; // "A"/"B"/"C"
-
+        const answer = btn.dataset.answer;
         answerButtons.forEach(b => b.classList.remove("selected"));
         btn.classList.add("selected");
 
-        if (!isTieBreak) {
-          answers[currentQuestionIndex] = answer;
-        } else {
-          extraAnswers[tieBreakIndex] = answer;
-        }
+        if (!isTieBreak) answers[currentQuestionIndex] = answer;
+        else extraAnswers[tieBreakIndex] = answer;
 
         nextButton.disabled = false;
       });
     });
 
-    // 次へボタン
     nextButton.addEventListener("click", () => {
       nextButton.disabled = true;
 
@@ -412,9 +450,8 @@
         } else {
           const counts = calcCounts(false);
           const unique = findUniqueDominant(counts);
-          if (unique) {
-            showResult(unique);
-          } else {
+          if (unique) showResult(unique);
+          else {
             isTieBreak = true;
             tieBreakIndex = 0;
             extraAnswers = [];
@@ -426,22 +463,34 @@
         const unique = findUniqueDominant(counts);
         const extras = extraQuestions[selectedBaseType] || [];
 
-        if (unique) {
-          showResult(unique);
-        } else if (tieBreakIndex < extras.length - 1) {
+        if (unique) showResult(unique);
+        else if (tieBreakIndex < extras.length - 1) {
           tieBreakIndex++;
           showTieBreakQuestion();
         } else {
-          const dominant = chooseDominantWithPriority(counts);
-          showResult(dominant);
+          showResult(chooseDominantWithPriority(counts));
         }
       }
     });
 
-    // 戻るボタン
     backButton.addEventListener("click", () => {
-      nextButton.disabled = false;
+      // 1問目（通常質問）の「戻る」はタイプ選択に戻す
+      if (!isTieBreak && currentQuestionIndex === 0) {
+        questionSection.classList.add("hidden");
+        typeSelectSection.classList.remove("hidden");
 
+        // 質問回答はリセット（タイプを選び直せるように）
+        answers = [];
+        extraAnswers = [];
+        isTieBreak = false;
+        tieBreakIndex = 0;
+
+        // 次へボタン状態
+        nextButton.disabled = true;
+        return;
+      }
+
+      nextButton.disabled = false;
       if (!isTieBreak) {
         if (currentQuestionIndex > 0) {
           currentQuestionIndex--;
@@ -455,86 +504,156 @@
       }
     });
 
-    // 最初に戻る（属性入力から）
-    restartButton.addEventListener("click", () => {
-      resetAll();
-      resultSection.classList.add("hidden");
-      questionSection.classList.add("hidden");
-      typeSelectSection.classList.add("hidden");
-      setupSection.classList.remove("hidden");
-      validateSetup();
-    });
 
-    // ===== TXT保存（手動） =====
-    saveTxtButton.addEventListener("click", () => {
-      if (!lastRecordForSave) {
-        alert("保存するデータがありません。");
-        return;
+    restartButton.addEventListener("click", () => location.reload());
+
+    saveTxtButton.addEventListener("click", (ev) => {
+      try{
+        if (!lastRecordForSave) {
+          alert("保存するデータがありません（診断結果が確定していない可能性があります）。");
+          return;
+        }
+        downloadResultAsCsv(lastRecordForSave);
+      }catch(e){
+        alert("保存処理でエラーが発生しました: " + (e && e.message ? e.message : String(e)));
+        console.error(e);
       }
-      downloadResultAsTxt(lastRecordForSave);
     });
 
-    function downloadResultAsTxt(record) {
-      const lines = [];
-      lines.push("推し焼酎診断 回答結果");
-      lines.push("----------------------------");
-      lines.push(`日時: ${record.timestamp}`);
-      lines.push(`年代: ${record.age}`);
-      lines.push(`性別: ${record.gender}`);
-      lines.push(`お住まい: ${record.prefecture}`);
-      lines.push("");
-      lines.push(`初期タイプ: ${record.baseType}`);
-      lines.push(`最終判定: ${record.resultKey}`);
-      lines.push(`結果タイトル: ${record.resultTitle}`);
-      lines.push("");
-      lines.push(`回答（通常）: ${(record.answers || []).join("")}`);
-      lines.push(`回答（延長）: ${(record.extraAnswers || []).join("")}`);
-      lines.push("");
-      lines.push("※ 本データは統計・分析目的で利用されます。");
+    // ===== 保存（.txt / 中身はCSV）用ユーティリティ =====
+    function escapeCsv(v){
+      const s = (v === null || typeof v === "undefined") ? "" : String(v);
+      return `"${s.replace(/"/g, '""')}"`;
+    }
 
-      const text = lines.join("\n");
+    function getCsvHeader(){
+      const header = [
+        "日時","年代","お住まい","初期タイプ","最終判定","結果タイトル",
+        "回答（通常）","回答（延長）","おすすめ焼酎1","おすすめ焼酎2"
+      ];
+      return header.map(escapeCsv).join(",");
+    }
 
-      // ファイル名：YYYYMMDD_都道府県.txt（都道府県は安全な文字だけにする）
-      const date = new Date(record.timestamp);
-      const ymd =
-        date.getFullYear().toString() +
-        String(date.getMonth() + 1).padStart(2, "0") +
-        String(date.getDate()).padStart(2, "0");
+    function buildCsvRow(record){
+      const row = [
+        record.timestampJST || formatTimestampJST(),
+        record.age,
+        record.prefecture,
+        record.baseType,
+        record.resultKey,
+        record.resultTitle,
+        (record.answers || []).join(""),
+        (record.extraAnswers || []).join(""),
+        record.recommend1 || "",
+        record.recommend2 || ""
+      ];
+      return row.map(escapeCsv).join(",");
+    }
 
-      const safePref = (record.prefecture || "unknown").replace(/[^\wぁ-んァ-ン一-龥]/g, "");
-      const filename = `oshishouchu_${ymd}_${safePref}.txt`;
+    // JSTで "YYYY-MM-DD HH:mm:ss+09:00"
+    function formatTimestampJST(){
+      const d = new Date();
+      const parts = new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", second: "2-digit",
+        hour12: false
+      }).formatToParts(d).reduce((acc, p) => (acc[p.type] = p.value, acc), {});
+      return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}+09:00`;
+    }
 
+    // JSTで "YYYYMMDDHHmmss"
+    function formatTimestampCompactJST(){
+      const ts = formatTimestampJST();
+      // "YYYY-MM-DD HH:mm:ss+09:00" -> "YYYYMMDDHHmmss"
+      return ts.replace(/[-: ]/g,"").replace("+09:00","").replace("+0900","");
+    }
+
+    function downloadText(text, filename){
       const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
 
+    function downloadResultAsCsv(record) {
+      const header = getCsvHeader();
+      const row = buildCsvRow(record);
+      const csv = [header, row].join("\n");
+      const filename = `oshishouchu_${formatTimestampCompactJST()}.txt`;
+      downloadText(csv, filename);
+    }
+
+
+// CSV出力用：値を安全にエスケープ（常にダブルクォートで囲む）
+    function escapeCsv(v){
+      const s = (v === null || typeof v === "undefined") ? "" : String(v);
+      return `"${s.replace(/"/g, '""')}"`;
+    
+    function getCsvHeader(){
+      const header = [
+        "日時","年代","お住まい","初期タイプ","最終判定","結果タイトル",
+        "回答（通常）","回答（延長）","おすすめ焼酎1","おすすめ焼酎2"
+      ];
+      return header.map(escapeCsv).join(",");
+    }
+
+    function buildCsvRow(record){
+      const row = [
+        record.timestampJST || formatTimestampJST(),
+        record.age,
+        record.prefecture,
+        record.baseType,
+        record.resultKey,
+        record.resultTitle,
+        (record.answers || []).join(""),
+        (record.extraAnswers || []).join(""),
+        record.recommend1 || "",
+        record.recommend2 || ""
+      ];
+      return row.map(escapeCsv).join(",");
+    }
+
+    function downloadText(text, filename){
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
-
       URL.revokeObjectURL(url);
     }
 
-    // ===== 関数群 =====
-    function resetAll() {
-      selectedBaseType = null;
-      currentQuestionIndex = 0;
-      answers = [];
-      extraAnswers = [];
-      isTieBreak = false;
-      tieBreakIndex = 0;
+}
 
-      demoAge = "";
-      demoGender = "";
-      demoPref = "";
-
-      lastRecordForSave = null;
-
-      typeButtons.forEach(b => b.classList.remove("selected"));
-      typeNextButton.disabled = true;
+    // JSTで "YYYY-MM-DD HH:mm:ss+09:00"
+    function formatTimestampJST(){
+      const d = new Date();
+      const parts = new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", second: "2-digit",
+        hour12: false
+      }).formatToParts(d).reduce((acc, p) => (acc[p.type] = p.value, acc), {});
+      return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}+09:00`;
     }
+
+    // JSTで "YYYYMMDDHHmmss"（ファイル名用）
+    function formatTimestampCompactJST(){
+      const ts = formatTimestampJST(); // YYYY-MM-DD HH:mm:ss+09:00
+      return ts.replace(/[-: +]/g,"").replace("0900",""); // 末尾の0900を落として14桁に
+    }
+
+    // 単発保存（必要なら使えるように残す）
+    
 
     function startQuestions() {
       typeSelectSection.classList.add("hidden");
@@ -547,10 +666,7 @@
       showQuestion();
     }
 
-    function clearSelection() {
-      answerButtons.forEach(b => b.classList.remove("selected"));
-    }
-
+    function clearSelection() { answerButtons.forEach(b => b.classList.remove("selected")); }
     function restoreSelection(answer) {
       clearSelection();
       if (!answer) return;
@@ -564,7 +680,6 @@
       const q = qList[currentQuestionIndex];
 
       isTieBreak = false;
-
       currentTypeTitle.textContent = `選択中のタイプ：${selectedBaseType}`;
       questionCounter.textContent = `質問 ${currentQuestionIndex + 1} / ${qList.length}`;
       questionText.textContent = q.text;
@@ -574,9 +689,8 @@
       answerCButton.textContent = `C. ${q.options.C}`;
 
       restoreSelection(answers[currentQuestionIndex]);
-
       nextButton.disabled = typeof answers[currentQuestionIndex] === "undefined";
-      backButton.disabled = (currentQuestionIndex === 0);
+      backButton.disabled = false;  // 1問目でもタイプ選択へ戻れるようにする
     }
 
     function showTieBreakQuestion() {
@@ -584,7 +698,6 @@
       const q = extras[tieBreakIndex];
 
       isTieBreak = true;
-
       currentTypeTitle.textContent = `選択中のタイプ：${selectedBaseType}（延長戦）`;
       questionCounter.textContent = `延長戦 ${tieBreakIndex + 1} / ${extras.length}`;
       questionText.textContent = q.text;
@@ -594,7 +707,6 @@
       answerCButton.textContent = `C. ${q.options.C}`;
 
       restoreSelection(extraAnswers[tieBreakIndex]);
-
       nextButton.disabled = typeof extraAnswers[tieBreakIndex] === "undefined";
       backButton.disabled = (tieBreakIndex === 0);
     }
@@ -602,15 +714,12 @@
     function calcCounts(includeExtra) {
       const count = { A: 0, B: 0, C: 0 };
       answers.forEach(a => { if (count[a] !== undefined) count[a]++; });
-      if (includeExtra) {
-        extraAnswers.forEach(a => { if (count[a] !== undefined) count[a]++; });
-      }
+      if (includeExtra) extraAnswers.forEach(a => { if (count[a] !== undefined) count[a]++; });
       return count;
     }
 
     function findUniqueDominant(count) {
-      const values = [count.A, count.B, count.C];
-      const max = Math.max(...values);
+      const max = Math.max(count.A, count.B, count.C);
       const winners = [];
       if (count.A === max) winners.push("A");
       if (count.B === max) winners.push("B");
@@ -632,21 +741,31 @@
       const resultKey = `${selectedBaseType}_${dominantAnswer}`;
       const resultData = results[resultKey];
 
-      if (resultData) {
-        resultTitle.textContent = resultData.title;
-        resultImage.src = resultData.image;
-        resultImage.alt = resultData.title;
-        resultText.textContent = resultData.text;
-      } else {
-        resultTitle.textContent = "結果データが設定されていません";
-        resultImage.src = "";
-        resultImage.alt = "";
-        resultText.textContent = `キー: ${resultKey} に対応する結果が results に存在しません。`;
-      }
+      resultTitle.textContent = resultData ? resultData.title : "結果なし";
+      // ★キャラ画像も resultKey に合わせて表示（images/A_A.png など）
+      resultImage.src = `images/${resultKey}.png`;
+      resultImage.alt = resultData ? resultData.title : resultKey;
+      resultText.textContent = resultData ? resultData.text : "";
 
-      // 保存ボタン用のレコードを確定
+      renderRecommends(resultKey);
+
+      // CSV保存用：おすすめ2本の名称
+      const recs = (recommendsByResultKey[resultKey] || []).slice(0, 2);
+      const recommend1 = recs[0] ? recs[0].name : "";
+      const recommend2 = recs[1] ? recs[1].name : "";
+
+      // CSV保存用：日本時間のタイムスタンプ
+      const parts = new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", second: "2-digit",
+        hour12: false
+      }).formatToParts(new Date()).reduce((acc, p) => (acc[p.type] = p.value, acc), {});
+      const timestampJST = `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}+09:00`;
+
       lastRecordForSave = {
         timestamp: new Date().toISOString(),
+        timestampJST: timestampJST,
         age: demoAge,
         gender: demoGender,
         prefecture: demoPref,
@@ -654,14 +773,15 @@
         dominant: dominantAnswer,
         resultKey: resultKey,
         resultTitle: resultData ? resultData.title : "",
+        recommend1: recommend1,
+        recommend2: recommend2,
         answers: answers.slice(),
         extraAnswers: extraAnswers.slice()
       };
     }
 
-    // 初期表示時に必須判定を反映
     validateSetup();
   </script>
+
 </body>
 </html>
-
